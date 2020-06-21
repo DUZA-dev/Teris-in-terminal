@@ -4,6 +4,13 @@ import config
 
 # For calculations range score
 SI_WL = lambda nLevel: config.SCORE_INCREMENT * config.WEIGHT_LEVELS * nLevel
+levels = [
+    {
+        'level': nLevel,
+        'range_score': range(SI_WL(nLevel), SI_WL(nLevel+1)),
+        'time_sleep': 1 / config.COUNT_LEVELS * (config.COUNT_LEVELS - nLevel)
+    } for nLevel in range(config.COUNT_LEVELS)
+]
 
 class Grid:
     def __init__(self):
@@ -11,16 +18,8 @@ class Grid:
 
         self.matrix = [[0 for x in range(config.WEIGHT_GRID)] for y in range(config.HEIGHT_GRID)]
 
-        self.levels = [
-            {
-                'level': nLevel,
-                'range_score': range(SI_WL(nLevel), SI_WL(nLevel+1)),
-                'time_sleep': 1 / config.COUNT_LEVELS * (config.COUNT_LEVELS - nLevel)
-            } for nLevel in range(config.COUNT_LEVELS)
-        ]
-
         # Текущий уровень
-        self.level = lambda: next((level for level in self.levels
+        self.level = lambda: next((level for level in levels
                                    if self.score in level["range_score"]))
 
     def print_grid(self, figure):
@@ -59,12 +58,13 @@ class Grid:
                     gameStr += config.BACKGROUND_MATRIX
 
             if xIndexFigure != 0:
+                xIndexFigure = 0
                 yIndexFigure += 1
-                xIndexFigure  = 0
 
             gameStr += "\n"
 
-        self.clear()
+        # Очищаем консоль от старых данных
+        os.system('clear')
 
         print(
             gameStr,
@@ -72,11 +72,6 @@ class Grid:
             'Level: %i' %  self.level()["level"],
             sep="\n"
         )
-
-    def clear(self):
-        ''' Очищает консоль '''
-
-        os.system('clear')
 
     def cleanCollectedLine(self, indexLineY):
         ''' Удаляет собранную линию и добавляет очки '''
@@ -95,5 +90,4 @@ class Grid:
         for yCoord in figureRangeY:
             for xCoord in figureRangeX:
                 if grid.matrix[yCoord][xCoord] == 1:
-                    print('\nLosing!')
-                    exit()
+                    exit('\nLosing!')

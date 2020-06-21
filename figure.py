@@ -32,23 +32,14 @@ class Figure:
     def insertFigureInGrid(self):
         ''' Вставляем фигуру в сетку игры '''
 
-        # Создаём диапазоны значений координат сетки, в которые нужно будет
-        # произвести вставку фигуры.
         figureRangeY = range(self.figureXY['y1'], self.figureXY['y2'])
         figureRangeX = range(self.figureXY['x1'], self.figureXY['x2'])
 
-        # FigureLineY&FigureLineX - для вставляемых значений фигуры и сетки.
-        figureLineY  = 0
-        for y in figureRangeY:
-            figureLineX = 0
-            for x in figureRangeX:
+        for figureLineY, y in enumerate(figureRangeY):
+            for figureLineX, x in enumerate(figureRangeX):
                 if self.figure[figureLineY][figureLineX]:
-                    # Если значение координаты фигуры - не равно 0, то
-                    # вставляем его в сетку.
-                    self.grid.matrix[y][x] = 1
-                figureLineX += 1
-            self.grid.cleanCollectedLine(y)
-            figureLineY += 1
+                    self.grid.matrix[y-1][x] = 1
+            self.grid.cleanCollectedLine(y-1)
 
     def declineCheckConditions(self):
         '''
@@ -58,21 +49,15 @@ class Figure:
         '''
         try:
             # Беру линию находящуюся под фигурой
-            mainline = self.grid.matrix[self.figureXY['y2']+1]
-
-            # Инкрементация, дальше будет цикл for, который начнёт перебирать
-            # значения нижней линии сетки и сравнивать со значением нижней
-            # линии фигуры, если каждый из них будет равен 1 - обрывает
-            # выполнение функции, и устанавливает статус опускания фигуры
-            # в False.
-            figureLineX = 0
-
-            for mlKey in range(self.figureXY['x1'],self.figureXY['x2']):
-                ml = mainline[mlKey]
-                if ml and self.figure[-1][figureLineX] == 1:
-                    self.statusDecline = False
-                    return
-                figureLineX += 1
+            # mainline = self.grid.matrix[self.figureXY['y2']+1]
+            # Перебирает значения нижней линии сетки и сравнивать со значением
+            # нижней линии фигуры, если каждый из них будет равен 1 - обрывает
+            # выполнение функции, и устанавливает статус опускания фигуры в False.
+            for figureLineY, gridY in enumerate(range(self.figureXY['y1'], self.figureXY['y2'])):
+                for figureLineX, gridX in enumerate(range(self.figureXY['x1'],self.figureXY['x2'])):
+                    if self.grid.matrix[gridY+1][gridX] and self.figure[figureLineY][figureLineX]:
+                        self.statusDecline = False
+                        return
 
             # Опускаем фигуру
             self.declineMethod()
@@ -97,7 +82,7 @@ class Figure:
         if side == 'left':
             # Индекс блока, находящегося слева от блока фигуры и его проверка
             # на случай попытки выходка за границы сетки
-            xIndexChar = self.figureXY['x1']-1
+            xIndexChar = self.figureXY['x1'] - 1
             if xIndexChar < 0:
                 return False
 
@@ -164,5 +149,4 @@ class Figure:
         for yCoord in figureRangeY:
             for xCoord in figureRangeX:
                 if self.grid.matrix[yCoord][xCoord] == 1:
-                    print('\nLosing!')
-                    exit()
+                    exit('\nLosing!')

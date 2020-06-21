@@ -1,10 +1,20 @@
 import time
-
-import config
-import controls
+import threading
 
 from grid import Grid
 from figure import Figure
+from controls import update as cupd
+
+def soundplay():
+    try:
+        import playsound
+        while True:
+            playsound.playsound('./bgmusic.mp3')
+    except:
+        pass
+
+threading.Thread(target=soundplay).start()
+
 
 # Создаём саму сетку игры (Стакан)
 grid = Grid()
@@ -14,7 +24,7 @@ while True:
     figure.checkLose()
 
     # Горячие клавиши управления фигурой
-    controls.update(figure)
+    cupd(figure)
 
     # Цикл падения фигуры
     while figure.statusDecline:
