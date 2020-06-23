@@ -1,5 +1,7 @@
 import os
 
+from platform import system
+
 import config
 
 # For calculations range score
@@ -11,6 +13,8 @@ levels = [
         'time_sleep': 1 / config.COUNT_LEVELS * (config.COUNT_LEVELS - nLevel)
     } for nLevel in range(config.COUNT_LEVELS)
 ]
+
+platform = system()
 
 class Grid:
     def __init__(self):
@@ -64,7 +68,10 @@ class Grid:
             gameStr += "\n"
 
         # Очищаем консоль от старых данных
-        os.system('clear')
+        if platform == "Windows":
+            os.system('cls')
+        else:
+            os.system('clear')
 
         print(
             gameStr,
